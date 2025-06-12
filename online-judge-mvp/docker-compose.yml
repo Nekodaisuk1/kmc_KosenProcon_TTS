@@ -1,0 +1,51 @@
+version: '3.8'
+services:
+  postgres:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - '5432:5432'
+
+  redis:
+    image: redis:7
+    restart: always
+    ports:
+      - '6379:6379'
+
+  judge0:
+    image: judge0/judge0:1.13.0
+    restart: always
+    env_file: .env
+    ports:
+      - '2358:2358'
+
+  backend:
+    build: ./backend
+    env_file: .env
+    depends_on:
+      - postgres
+      - redis
+      - judge0
+    ports:
+      - '8000:8000'
+
+  worker:
+    build: ./backend
+    command: ['python', 'app/worker.py']
+    env_file: .env
+    depends_on:
+      - backend
+      - postgres
+      - redis
+      - judge0
+
+  frontend:
+    build: ./frontend
+    env_file: .env
+    depends_on:
+      - backend
+    ports:
+      - '3000:3000'
