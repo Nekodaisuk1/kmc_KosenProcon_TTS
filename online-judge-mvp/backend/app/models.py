@@ -1,39 +1,35 @@
-from sqlalchemy import Column, Integer, String, Text, ForeignKey, Float, DateTime
-from sqlalchemy.orm import relationship
-from sqlalchemy.sql import func
+from __future__ import annotations
 
-from .database import Base
+import os
+from typing import Optional
+from sqlmodel import Field, SQLModel, create_engine
 
-class User(Base):
-    __tablename__ = "users"
+DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./app.db")
+_engine = None
 
-    id = Column(Integer, primary_key=True)
-    username = Column(String(50), unique=True, nullable=False)
+def get_engine():
+    global _engine
+    if _engine is None:
+        _engine = create_engine(DATABASE_URL, echo=False)
+    return _engine
 
-    submissions = relationship("Submission", back_populates="user")
+class Problem(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    title: str
+    description: str
+    sample_input: str | None = None
+    sample_output: str | None = None
 
-class Problem(Base):
-    __tablename__ = "problems"
+class Submission(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    problem_id: int = Field(foreign_key="problem.id")
+    code: str
+    stdin: str | None = None
+    status: str = "Queued"
+    stdout: str | None = None
+    stderr: str | None = None
+    time: float | None = None
 
-    id = Column(Integer, primary_key=True)
-    title = Column(String(100), nullable=False)
-    description = Column(Text, nullable=False)
-
-    submissions = relationship("Submission", back_populates="problem")
-
-class Submission(Base):
-    __tablename__ = "submissions"
-
-    id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
-    problem_id = Column(Integer, ForeignKey("problems.id"), nullable=False)
-    code = Column(Text, nullable=False)
-    stdin = Column(Text)
-    stdout = Column(Text)
-    stderr = Column(Text)
-    status = Column(String(50), default="Queued", nullable=False)
-    time = Column(Float)
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-
-    user = relationship("User", back_populates="submissions")
-    problem = relationship("Problem", back_populates="submissions")
+def init_db() -> None:
+    engine = get_engine()
+    SQLModel.metadata.create_all(engine)

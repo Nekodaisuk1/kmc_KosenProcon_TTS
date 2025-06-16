@@ -1,10 +1,14 @@
+from __future__ import annotations
+
 from typing import Optional
 from pydantic import BaseModel
 
-class ProblemOut(BaseModel):
+class ProblemRead(BaseModel):
     id: int
     title: str
     description: str
+    sample_input: Optional[str] = None
+    sample_output: Optional[str] = None
 
     class Config:
         from_attributes = True
@@ -14,12 +18,12 @@ class SubmissionCreate(BaseModel):
     code: str
     stdin: Optional[str] = ""
 
-class SubmissionOut(BaseModel):
+class SubmissionRead(BaseModel):
     id: int
     problem_id: int
+    status: str
     stdout: Optional[str] = None
     stderr: Optional[str] = None
-    status: str
     time: Optional[float] = None
 
     class Config:

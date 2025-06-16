@@ -1,48 +1,29 @@
-# kmc_KosenProcon_TTS
+# Online Judge MVP
 
-This repository contains a minimal online judge prototype.
+This project provides a minimal online judge using FastAPI, Supabase Postgres, Render and Vercel.
 
-## Getting Started (without Docker)
+## Setup Overview
 
-1. **Create a Python virtual environment**
+1. **Create a Supabase project** and note the Postgres connection string. Enable public network access.
+2. **Import this repository to Render** and deploy `online-judge-mvp/backend` as a Web Service. Set the following environment variables:
+   - `DATABASE_URL` – Supabase connection string
+   - `JUDGE0_URL` – `https://ce.judge0.com`
+3. **Import `online-judge-mvp/frontend` to Vercel** and set `NEXT_PUBLIC_API_URL` to the Render service URL.
 
-   ```bash
-   python -m venv .venv
-   source .venv/bin/activate
-   pip install -r online-judge-mvp/backend/requirements.txt
-   ```
+Supabase requires no additional schema; tables are created automatically on first launch.
 
-2. **Install Node.js 20 and pnpm**, then install frontend dependencies:
+## Local Development
 
-   ```bash
-   cd online-judge-mvp/frontend
-   pnpm install
-   ```
+```bash
+# Backend
+cd online-judge-mvp/backend
+pip install -r requirements.txt
+uvicorn app.main:app --reload
 
-3. **Configure environment variables**
+# Frontend
+cd ../frontend
+pnpm install
+pnpm dev
+```
 
-   ```bash
-   cp online-judge-mvp/.env.example online-judge-mvp/.env
-   ```
-   The default settings use SQLite and access the public Judge0 API.
-
-4. **Run the backend and worker** (in separate terminals):
-
-   ```bash
-   cd online-judge-mvp/backend
-   uvicorn app.main:app --reload
-   # another terminal
-   python app/worker.py
-   ```
-
-5. **Run the frontend**
-
-   ```bash
-   cd online-judge-mvp/frontend
-   pnpm dev
-   ```
-
-Open <http://localhost:3000> in your browser to access the application.
-
-This setup avoids Docker and relies on SQLite, reducing disk usage by several gigabytes compared to the container-based version.
-
+Open `http://localhost:3000` to access the app.
