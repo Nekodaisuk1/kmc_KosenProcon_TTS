@@ -7,6 +7,8 @@ interface Problem {
   id: number
   title: string
   description: string
+  sample_input?: string
+  sample_output?: string
 }
 
 interface Submission {
@@ -22,13 +24,13 @@ export default function ProblemPage({ params }: { params: { id: string } }) {
   const [code, setCode] = useState('')
   const [stdin, setStdin] = useState('')
   const [sub, setSub] = useState<Submission | null>(null)
-  const API = process.env.NEXT_PUBLIC_BACKEND_URL
+  const API = process.env.NEXT_PUBLIC_API_URL
 
   useEffect(() => {
     fetch(`${API}/problems/${params.id}`)
       .then(res => res.json())
       .then(setProblem)
-  }, [params.id])
+  }, [params.id, API])
 
   const submit = async () => {
     const res = await fetch(`${API}/submit`, {
@@ -36,7 +38,7 @@ export default function ProblemPage({ params }: { params: { id: string } }) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ problem_id: Number(params.id), code, stdin })
     })
-    const data = await res.json()
+    const data: Submission = await res.json()
     setSub(data)
     if (res.ok) poll(data.id)
   }
@@ -63,10 +65,10 @@ export default function ProblemPage({ params }: { params: { id: string } }) {
       {sub && (
         <table className='mt-4 table-auto border'>
           <tbody>
-            <tr><th>Status</th><td>{sub.status}</td></tr>
-            <tr><th>Time</th><td>{sub.time}</td></tr>
-            <tr><th>stdout</th><td><pre>{sub.stdout}</pre></td></tr>
-            <tr><th>stderr</th><td><pre>{sub.stderr}</pre></td></tr>
+            <tr><th className='px-2 text-left'>Status</th><td>{sub.status}</td></tr>
+            <tr><th className='px-2 text-left'>Time</th><td>{sub.time}</td></tr>
+            <tr><th className='px-2 text-left'>stdout</th><td><pre>{sub.stdout}</pre></td></tr>
+            <tr><th className='px-2 text-left'>stderr</th><td><pre>{sub.stderr}</pre></td></tr>
           </tbody>
         </table>
       )}

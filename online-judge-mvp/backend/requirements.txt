@@ -1,7 +1,7 @@
-fastapi
+fastapi==0.111.0
 uvicorn
-SQLAlchemy>=2
-aiosqlite
-redis
+SQLModel
+asyncpg
+python-dotenv
 httpx
-pydantic>=2
+python-multipart
