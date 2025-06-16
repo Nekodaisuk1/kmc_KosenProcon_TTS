@@ -1,7 +1,7 @@
 fastapi
 uvicorn
 SQLAlchemy>=2
-asyncpg
+aiosqlite
 redis
 httpx
 pydantic>=2
