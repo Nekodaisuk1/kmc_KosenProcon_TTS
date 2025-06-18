@@ -12,8 +12,8 @@ from .judge0 import run_code
 app = FastAPI()
 
 @app.get("/")
-async def root():
-    return {"message": "Hello, Procon!"}
+async def healthcheck():
+    return Response(status_code=200)
 
 origins = ["http://localhost:3000"]
 app.add_middleware(
