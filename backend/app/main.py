@@ -11,14 +11,20 @@ from .judge0 import run_code
 
 app = FastAPI()
 
-origins = ["http://localhost:3000", "https://*.vercel.app"]
+@app.get("/")
+async def root():
+    return {"message": "Hello, Procon!"}
+
+origins = ["http://localhost:3000"]
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
+    allow_origin_regex=r"https://.*\.vercel\.app",   # ← 追加
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 
 def get_session() -> Session:
     engine = get_engine()
